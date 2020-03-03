@@ -16,10 +16,26 @@ public class SocketUtils {
     private static final String TAG = SocketUtils.class.getSimpleName();
 
     public static String readString(InputStream is, byte[] buffer) throws IOException {
+        checkArguments(is, buffer);
+
         final StringBuilder sb = new StringBuilder();
         readString(is, buffer, sb);
 
         return sb.toString();
+    }
+
+    private static void checkArguments(InputStream is, byte[] buffer) {
+        if (is == null) {
+            throw new NullPointerException("Input stream argument is null.");
+        }
+
+        if (buffer == null) {
+            throw new NullPointerException("Buffer argument is null.");
+        }
+
+        if (buffer.length == 0) {
+            throw new IllegalArgumentException("Buffer argument is a zero length array.");
+        }
     }
 
     private static void readString(InputStream is, byte[] buffer, StringBuilder sb) throws IOException {
@@ -42,10 +58,10 @@ public class SocketUtils {
             nReadInStep = is.read(buffer, totalRead, buffer.length - totalRead);
             if (nReadInStep > 0) {
                 totalRead += nReadInStep;
-            }
 
-            spaceLeftInBuffer = (totalRead < buffer.length);
-            eotRead = (buffer[totalRead - 1] == EOT);
+                spaceLeftInBuffer = (totalRead < buffer.length);
+                eotRead = (buffer[totalRead - 1] == EOT);
+            }
         }
 
         if (eotRead) {
